@@ -1,102 +1,61 @@
-// en layout de tabs
-import { useColorScheme } from "@/hooks/use-color-scheme";
-
-import Ionicons from "@expo/vector-icons/Ionicons";
-
-import { Tabs } from "expo-router";
-
-import React from "react";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
+import "react-native-reanimated";
  
-export default function TabLayout() {
-
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { container } from "@/src/di/container"; // 🟢 Importar el container
+ 
+SplashScreen.preventAutoHideAsync();
+ 
+export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [loaded] = useFonts({
+    SpaceMono: require("@/assets/fonts/SpaceMono-BoldItalic.ttf"),
+  });
+ 
+  // 🟢 Inicializar el container
+  const [containerReady, setContainerReady] = useState(false);
+ 
+  useEffect(() => {
+    const initContainer = async () => {
+      try {
+        await container.initialize();
+        setContainerReady(true);
+      } catch (error) {
+        console.error("Error initializing container:", error);
+      }
+    };
+ 
+    initContainer();
+  }, []);
+ 
+  useEffect(() => {
+    if (loaded && containerReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, containerReady]);
+ 
+  if (!loaded || !containerReady) {
+    return (
+<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+<ActivityIndicator size="large" />
+</View>
+    );
+  }
  
   return (
-<Tabs
-
-      screenOptions={{
-
-        tabBarActiveTintColor: colorScheme === "dark" ? "#fff" : "#007AFF",
-
-        headerShown: false,
-
-      }}
->
-<Tabs.Screen
-
-        name="index"
-
-        options={{
-
-          title: "Home",
-
-          tabBarIcon: ({ color, focused }) => (
-<Ionicons
-
-              name={focused ? "home" : "home-outline"}
-
-              size={24}
-
-              color={color}
-
-            />
-
-          ),
-
-        }}
-
-      />
-<Tabs.Screen
-
-        name="todos"
-
-        options={{
-
-          title: "Todos",
-
-          tabBarIcon: ({ color, focused }) => (
-<Ionicons
-
-              name={focused ? "list" : "list-outline"}
-
-              size={24}
-
-              color={color}
-
-            />
-
-          ),
-
-        }}
-
-      />
-<Tabs.Screen
-
-        name="explore"
-
-        options={{
-
-          title: "Explore",
-
-          tabBarIcon: ({ color, focused }) => (
-<Ionicons
-
-              name={focused ? "code-slash" : "code-slash-outline"}
-
-              size={24}
-
-              color={color}
-
-            />
-
-          ),
-
-        }}
-
-      />
-</Tabs>
-
+<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+<Stack screenOptions={{ headerShown: false }}>
+<Stack.Screen name="(tabs)/todos" />
+</Stack>
+</ThemeProvider>
   );
-
 }
- 
