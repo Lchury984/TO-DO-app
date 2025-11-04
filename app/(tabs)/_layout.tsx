@@ -54,7 +54,10 @@ export default function RootLayout() {
   return (
 <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 <Stack screenOptions={{ headerShown: false }}>
-<Stack.Screen name="(tabs)/todos" />
+<Stack.Screen name="login" />
+<Stack.Screen name="register" />
+<Stack.Screen name="todos" />
+<Stack.Screen name="profile" />
 </Stack>
 </ThemeProvider>
   );

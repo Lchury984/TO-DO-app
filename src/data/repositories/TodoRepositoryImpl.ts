@@ -5,15 +5,15 @@ import { SQLiteTodoDataSource } from "../datasources/SQLiteTodoDataSource";
 export class TodoRepositoryImpl implements TodoRepository {
     constructor(private dataSource: SQLiteTodoDataSource) {}
 
-    async getAll(): Promise<Todo[]> {
-        return await this.dataSource.getAllTodos();
+    async getAll(userId: string): Promise<Todo[]> { // Falta el parámetro userId
+        return await this.dataSource.getAllTodos(userId);
     }
     async getById(id: string): Promise<Todo | null> {
         return await this.dataSource.getTodoById(id);
 
     }
-    async create(data: CreateTodoDTO): Promise<Todo> {
-        return await this.dataSource.createTodo(data.title);
+    async create(data: CreateTodoDTO): Promise<Todo> { // No se está pasando el userId
+        return await this.dataSource.createTodo(data.title, data.userId);
     }
     async update(data: UpdateTodoDTO): Promise<Todo> {
         return await this.dataSource.updateTodo(
